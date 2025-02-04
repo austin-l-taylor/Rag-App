@@ -90,7 +90,7 @@ def split_document(documents, chunk_size, chunk_overlap):
         length_function=len,
         separators=["\n\n", "\n", " "],
     )
-
+    
     return text_splitter.split_documents(documents)
 
 

@@ -1,5 +1,5 @@
 import streamlit as st
-import functions
+import functions, data_handler
 import pandas as pd
 import time
 import os
@@ -105,7 +105,7 @@ def export_chat():
         file_name="chat_log.csv",
         mime="text/csv",
     )
-
+    
 def basic_response_output(prompt):
     """
     Summary: Generates a response from ChatOpenAI and displays it in the chat message container.
@@ -207,7 +207,7 @@ def pdf_response_output(prompt):
         st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 def main():
-    st.title("Welcome to the Mckenney's Ai Chatbot  🤖")
+    st.title("Welcome to the McKenney's AI Chatbot! 🤖")  
 
     initialize_session_state()
     uploaded_file = render_sidebar()
@@ -223,7 +223,11 @@ def main():
     if prompt and st.session_state.pdf_chat == False:
         basic_response_output(prompt)   
     if len(st.session_state.messages) > 0:
+        messages = st.session_state.messages
+        for message in messages:
+            data_handler.push_chat_content(message)
         export_chat()
-
+        data_handler.clear_db()
+    
 if __name__ == "__main__":
     main()

@@ -1,4 +1,4 @@
-# AI RAG Application
+# McKenney's AI RAG Application
 
 This is a Streamlit application that allows you to chat with OpenAI's GPT models and provides the functionality to upload a PDF document and ask questions about its content.
 

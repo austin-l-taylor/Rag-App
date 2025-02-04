@@ -1,5 +1,4 @@
 import sqlite3
-import pandas as pd
 import os
 import shutil
 
@@ -16,33 +15,46 @@ def clear_db():
         except Exception as e:
             print(f"Failed to delete {file_path}. Reason: {e}")
 
-def sql_push(combined_df):
-    # Connect to the SQLite database (or create it if it doesn't exist)
-    conn = sqlite3.connect("db/chat_log.db")
+def push_chat_content(message):
+    """summary: Pushes the chat content to the SQL database.
+
+    Args:
+        message (dict): The message to be pushed to the database.   
+    """
+    #create a SQL lite database
+    conn = sqlite3.connect("db/chat_log.db")    
     
-    # Write the DataFrame to the SQL table
     try:
-        combined_df.to_sql("chat_log", conn, if_exists="append", index=False)
+        # Create a cursor object
+        cursor = conn.cursor()
+        
+        # Create a table if it does not exist
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS chat_log (
+                role TEXT,
+                content TEXT
+            )
+            """
+        )
+        
+        # Insert the message into the table
+        cursor.execute(
+            """
+            INSERT INTO chat_log (role, content) VALUES (?, ?)
+            """,
+            (message["role"], message["content"]),
+        )
+        
+        # Commit the changes
+        conn.commit()
+        conn.close()
+        
     except Exception as e:
         print(f"An error occurred while writing to SQL: {e}")
         raise
     
-    # Close the database connection
-    conn.close()
-
-def push_chat_content(chat_history):
-    # Convert the chat history list to a pandas DataFrame
-    chat_history_df = pd.DataFrame(chat_history)
-    
-    # Separate user and assistant content
-    user_content = chat_history_df[chat_history_df["role"] == "user"]["content"].values
-    assistant_content = chat_history_df[chat_history_df["role"] == "assistant"]["content"].values
-    
-    # Combine user and assistant content into a single DataFrame
-    combined_df = pd.DataFrame({"user": user_content, "assistant": assistant_content})
-    
-    print(f"Combined Data {combined_df}")
-    
-    # Push the combined DataFrame to the SQLite table
-    sql_push(combined_df)
-    
+    # cursor = conn.cursor()
+    # #print the contents of the database
+    # cursor.execute("SELECT * FROM chat_log")
+    # print(cursor.fetchall())
