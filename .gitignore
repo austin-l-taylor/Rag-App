@@ -96,4 +96,5 @@ dmypy.json
 # Keys
 *.key
 *.env
+app/.env
 

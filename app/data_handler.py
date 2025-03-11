@@ -1,6 +1,9 @@
 import sqlite3
 import os
 import shutil
+import pyodbc
+from dotenv import load_dotenv
+load_dotenv()
 
 def clear_db(): 
     # Delete every file in the db folder
@@ -15,46 +18,34 @@ def clear_db():
         except Exception as e:
             print(f"Failed to delete {file_path}. Reason: {e}")
 
-def push_chat_content(message):
-    """summary: Pushes the chat content to the SQL database.
+# def push_chat_content(message):
+#     """summary: Pushes the chat content to the SQL database.
 
-    Args:
-        message (dict): The message to be pushed to the database.   
-    """
-    #create a SQL lite database
-    conn = sqlite3.connect("db/chat_log.db")    
-    
-    try:
-        # Create a cursor object
-        cursor = conn.cursor()
+#     Args:
+#         message (dict): The message to be pushed to the database.   
+#     """
+#     try:
         
-        # Create a table if it does not exist
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS chat_log (
-                role TEXT,
-                content TEXT
-            )
-            """
-        )
+#         str_server = os.getenv("SQL_SERVER")   
+#         str_database = os.getenv("SQL_DATABASE")
+#         username = os.getenv("SQL_USERNAME")
+#         password = os.getenv("SQL_PASSWORD")
+
+#         # Create the connection string
+#         connection_string = (
+#             f"DRIVER={{ODBC Driver 18 for SQL Server}};"
+#             f"SERVER={str_server};"
+#             f"DATABASE={str_database};"
+#             f"UID={username};"
+#             f"PWD={password};"
+#             "TrustServerCertificate=yes;"
+#             "Encrypt=yes;"
+#         )
+
+#         connection = pyodbc.connect(connection_string)  
+#         cursor  = connection.cursor()   
         
-        # Insert the message into the table
-        cursor.execute(
-            """
-            INSERT INTO chat_log (role, content) VALUES (?, ?)
-            """,
-            (message["role"], message["content"]),
-        )
+#         print("SQL Connection Established")
         
-        # Commit the changes
-        conn.commit()
-        conn.close()
-        
-    except Exception as e:
-        print(f"An error occurred while writing to SQL: {e}")
-        raise
-    
-    # cursor = conn.cursor()
-    # #print the contents of the database
-    # cursor.execute("SELECT * FROM chat_log")
-    # print(cursor.fetchall())
+#     except Exception as e:
+#         print(f"ERROR connecting to SQL Server or DB push: {e}")

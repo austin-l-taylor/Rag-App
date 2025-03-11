@@ -16,7 +16,7 @@ This is a Streamlit application that allows you to chat with OpenAI's GPT models
 - Python 3.7 or higher
 - [OpenAI API Key](https://platform.openai.com/account/api-keys)
 
-### Create a Virtual Environment (Optional but Recommended)
+### Create a Virtual Environment
 
 ```bash
 python -m venv venv
@@ -33,33 +33,19 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Set Up Environment Variables
+### Set Up Keeper Environment
 
-Create a `.env` file in the root directory of the project and add your OpenAI API key:
+```SECRET_ID``` Should point to a Keeper UID container your API key:
 
-```bash
-OPENAI_API_KEY=your_openai_api_key
+```bash  
+# Configuration
+SECRET_ID = "6VKizQ3fK7fSPq41w8E5zg"
+
+Keeper.authorize()
+secret = Keeper.client.get_secrets([SECRET_ID])[0]
+secret = secret.custom_field("Secret", field_type=None, value=None)
+api_key = secret[0]
 ```
-
-Alternatively, you can set the environment variable in your shell:
-
-- **Windows**
-
-  ```bash
-  set OPENAI_API_KEY=your_openai_api_key
-  ```
-
-### Setup API Key
-
-```python
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
-```
-
-Make sure you have set the `OPENAI_API_KEY` environment variable as instructed above.
 
 ## Usage
 
@@ -87,6 +73,55 @@ The app will open in your default web browser.
 4. **Start Chatting**: Type your message in the input box at the bottom of the app and press Enter.
 5. **Export Chat History**: Click the **Download Chat Log** button to export your chat history as a CSV file.
 
+## Docker Instructions
+
+### Building and Pushing a New Docker Image Version
+
+To create a new version of your Docker image and push it to your Docker repository, follow these steps:
+
+1. **Build the Docker Image**: Navigate to the directory containing your `Dockerfile` and run the following command to build the image. Replace `v1.1` with your desired version tag.
+
+    ```sh
+    docker build -t atay95/streamlit-app:v1.1 .
+    ```
+
+2. **Tag the Docker Image**: Tag the Docker image with the repository name. Replace `v1.1` with your desired version tag.
+
+    ```sh
+    docker tag atay95/streamlit-app:v1.1 atay95/streamlit-app:v1.1
+    ```
+
+3. **Log in to Docker Hub**: Log in to your Docker Hub account if you haven't already:
+
+    ```sh
+    docker login
+    ```
+
+4. **Push the Docker Image**: Push the tagged image to your Docker repository:
+
+    ```sh
+    docker push atay95/streamlit-app:v1.1
+    ```
+
+### Example Commands
+
+Here is a summary of the commands:
+
+#### Step 1: Build and Tag the Docker image
+```sh
+docker build -t atay95/streamlit-app:v1.1 .
+```
+
+#### Step 2: Log in to Docker Hub
+```sh
+docker login
+```
+
+#### Step 3: Push the Docker image to the repository
+```sh
+docker push atay95/streamlit-app:v1.1
+```
+
 ### Notes
 
 - **Resetting the App**: Refresh the page if you wish to reset the chat history or switch to a different PDF.
@@ -110,4 +145,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For questions or feedback, please open an issue in the repository.
+For questions or feedback, please open an issue in the repository or reach out to one of the contributors.

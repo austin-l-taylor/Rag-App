@@ -201,17 +201,21 @@ def query_document(vectorstore, query, api_key):
 
     :return: A plain response from the language model
     """
+    
+    # Initialize LLM
     llm = ChatOpenAI(model="gpt-4o-mini", api_key=api_key)
+    
+    # TODO: Look into the following:
+    # 1. Similarity search with Filter Ex: results = vector_store.similarity_search(query="thud", k=1, filter={"baz": "bar"})
+    # 2. Similarity search with Score Ex: results = vector_store.similarity_search_with_score(query="qux", k=1)
+    # 3. Basic Similar Search Ex: results = vector_store.similarity_search(query="thud", k=1)
 
-    retriever = vectorstore.as_retriever(search_type="similarity")
+    retriever = vectorstore.as_retriever(search_type="similarity") # Initialize Retriever
+    retrieved_docs = retriever.invoke(query) # Retrieve relevant documents
+    formatted_context = format_docs(retrieved_docs) # Format documents
+    
+    prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE) # Prepare the prompt template
+    prompt = prompt_template.format(context=formatted_context, question=query) # Generate the final prompt
+    response = llm.invoke(prompt) # Invoke the LLM
 
-    prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-
-    rag_chain = (
-        {"context": retriever | format_docs, "question": RunnablePassthrough()}
-        | prompt_template
-        | llm
-    )
-
-    response = rag_chain.invoke(query)
     return response

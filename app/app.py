@@ -7,7 +7,10 @@ from dotenv import load_dotenv
 
 # Load the OpenAI API key from the .env file
 load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")   
+api_key = os.environ.get("OPENAI_API_KEY")
+
+if not api_key:
+    api_key = os.getenv("OPENAI_API_KEY")
 
 def clear_cache():
     st.cache_resource.clear()
@@ -93,10 +96,11 @@ def export_chat():
     """
     Summary: Exports the chat history to a CSV file.
     """
-    # Convert the session state messages to a DataFrame
-    messages_df = pd.DataFrame(st.session_state.messages)
-    # Convert the DataFrame to a CSV string
-    csv_data = messages_df.to_csv(index=False)
+    
+    messages_df = pd.DataFrame(st.session_state.messages) # Convert the session state messages to a DataFrame
+    csv_data = messages_df.to_csv(index=False) # Convert the DataFrame to a CSV string
+    
+    #data_handler.push_chat_content(messages_df)    
 
     # Create the download button with the CSV data
     st.download_button(
@@ -223,11 +227,7 @@ def main():
     if prompt and st.session_state.pdf_chat == False:
         basic_response_output(prompt)   
     if len(st.session_state.messages) > 0:
-        messages = st.session_state.messages
-        for message in messages:
-            data_handler.push_chat_content(message)
         export_chat()
-        data_handler.clear_db()
-    
+        
 if __name__ == "__main__":
     main()
